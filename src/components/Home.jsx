@@ -89,7 +89,7 @@ const SchoolWebsite = () => {
       studyResources: 'Study Resources',
       calendar: 'Academic Calendar',
       feedback: 'Feedback',
-      welcome: 'Welcome to Champion Comprehensive High School Makenene',
+      welcome: 'Welcome to Champion Bilingual Comprehensive High School Makenene',
       motto: 'Excellence in Education, Character in Leadership',
       aboutUs: 'About Us',
       contactUs: 'Contact Us'
@@ -105,7 +105,7 @@ const SchoolWebsite = () => {
       studyResources: 'Ressources d\'Étude',
       calendar: 'Calendrier Académique',
       feedback: 'Commentaires',
-      welcome: 'Bienvenue au Lycée Polyvalent Champion Makenene',
+      welcome: 'Bienvenue au Lycée Bilingue Polyvalent Champion Makenene',
       motto: 'Excellence dans l\'Éducation, Caractère dans le Leadership',
       aboutUs: 'À Propos',
       contactUs: 'Nous Contacter'
@@ -178,7 +178,7 @@ const SchoolWebsite = () => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-2">
             <School className="h-8 w-8" />
-            <span className="font-bold text-lg">CCHS Makenene</span>
+            <span className="font-bold text-lg">CBCHS Makenene / COLPOBIC</span>
           </div>
           
           <div className="hidden md:flex space-x-6">
@@ -312,7 +312,7 @@ const SchoolWebsite = () => {
             {t.aboutUs}
           </h2>
           <p className="text-gray-600 leading-relaxed">
-            Champion Comprehensive High School Makenene has been a beacon of educational excellence 
+            Champion Bilingual Comprehensive High School Makenene has been a beacon of educational excellence 
             since 2000. We pride ourselves on nurturing young minds with quality education, 
             character development, and preparing students for the challenges of tomorrow.
           </p>
@@ -326,15 +326,15 @@ const SchoolWebsite = () => {
           <div className="space-y-3">
             <div className="flex items-center">
               <MapPin className="h-5 w-5 text-gray-500 mr-3" />
-              <span>Makenene, Centre Region, Cameroon</span>
+              <span> P.O Box 10, Makenene, Centre Region, Cameroon</span>
             </div>
             <div className="flex items-center">
               <Phone className="h-5 w-5 text-gray-500 mr-3" />
-              <span>+237 677 123 456</span>
+              <span>+237 672 774 307 / +237650079756</span>
             </div>
             <div className="flex items-center">
               <Mail className="h-5 w-5 text-gray-500 mr-3" />
-              <span>info@cchsmakenene.edu.cm</span>
+              <span>championscbcc@yahoo.com</span>
             </div>
           </div>
         </div>
@@ -930,7 +930,7 @@ const SchoolWebsite = () => {
             <div>
               <div className="flex items-center space-x-2 mb-4">
                 <School className="h-6 w-6" />
-                <span className="font-bold">CCHS Makenene</span>
+                <span className="font-bold">CBCHS / COLPOBIC Makenene</span>
               </div>
               <p className="text-blue-200">
                 Excellence in Education, Character in Leadership
@@ -948,9 +948,9 @@ const SchoolWebsite = () => {
             <div>
               <h4 className="font-semibold mb-3">Contact Info</h4>
               <div className="space-y-2 text-blue-200">
-                <p className="flex items-center"><MapPin className="h-4 w-4 mr-2" /> Makenene, Centre</p>
-                <p className="flex items-center"><Phone className="h-4 w-4 mr-2" /> +237 677 123 456</p>
-                <p className="flex items-center"><Mail className="h-4 w-4 mr-2" /> info@cchsmakenene.edu.cm</p>
+                <p className="flex items-center"><MapPin className="h-4 w-4 mr-2" /> P.O Box 10, Makenene, Centre</p>
+                <p className="flex items-center"><Phone className="h-4 w-4 mr-2" /> +237 650079756 / +237672774307</p>
+                <p className="flex items-center"><Mail className="h-4 w-4 mr-2" /> championscbcc@yahoo.com</p>
               </div>
             </div>
             <div>

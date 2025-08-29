@@ -29,7 +29,8 @@ import {
   Filter,
   Eye,
   Edit3,
-  Save
+  Save,
+  ExternalLink
 } from 'lucide-react';
 
 const SchoolWebsite = () => {
@@ -38,34 +39,10 @@ const SchoolWebsite = () => {
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [generatedLink, setGeneratedLink] = useState('');
   
   // Sample data
-  const [students, setStudents] = useState([
-    { 
-      id: 1, 
-      name: 'Jean Baptiste Nkomo', 
-      class: 'Form 5A', 
-      subjects: { Math: 18, Physics: 16, Chemistry: 17, English: 15 },
-      photo: '/api/placeholder/80/80',
-      sequence: 1
-    },
-    { 
-      id: 2, 
-      name: 'Marie Claire Foka', 
-      class: 'Form 5A', 
-      subjects: { Math: 19, Physics: 18, Chemistry: 19, English: 17 },
-      photo: '/api/placeholder/80/80',
-      sequence: 1
-    },
-    { 
-      id: 3, 
-      name: 'Paul Mbarga', 
-      class: 'Form 4B', 
-      subjects: { Math: 14, Physics: 13, Chemistry: 15, English: 16 },
-      photo: '/api/placeholder/80/80',
-      sequence: 1
-    }
-  ]);
+  const [students, setStudents] = useState([]);
 
   const [announcements, setAnnouncements] = useState([
     "GCE Mock Exams start March 15th, 2025",
@@ -75,7 +52,11 @@ const SchoolWebsite = () => {
   ]);
 
   const [feedback, setFeedback] = useState([]);
-  const [newStudent, setNewStudent] = useState({ name: '', class: '', subjects: {} });
+  const [newStudent, setNewStudent] = useState({ 
+    name: '', 
+    class: '', 
+    subjects: { Math: '', Physics: '', Chemistry: '', English: '', Biology: '', History: '', Economics: '', Geography: '', Geology: '', Literature: '', Logic: '', Religion: '', French: '', ICT: '', Commerce: '', Art: '', Music: '', Drama: '', Physical : '', Computer: '', Accounting: '', Business: '', BusinessMaths: '', BusinessStudies: '', OfficePractice: '', } 
+  });
 
   const translations = {
     en: {
@@ -115,11 +96,14 @@ const SchoolWebsite = () => {
   const t = translations[language];
 
   const campusImages = [
-    { url: '/api/placeholder/800/400', caption: 'Main School Building' },
-    { url: '/api/placeholder/800/400', caption: 'Science Laboratory' },
-    { url: '/api/placeholder/800/400', caption: 'Library and Study Hall' },
-    { url: '/api/placeholder/800/400', caption: 'Sports Complex' },
-    { url: '/api/placeholder/800/400', caption: 'Computer Lab' }
+    { url: '/src/assets/images/building1.jpeg', caption: 'Main School Building' },
+    { url: '/src/assets/images/lap1.jpeg', caption: 'Science Laboratory' },
+    { url: '/src/assets/images/liabrary.jpeg', caption: 'Library and Study Hall' },
+    { url: '/src/assets/images/sport.jpeg', caption: 'Sports Complex' },
+    { url: '/src/assets/images/lap2.jpeg', caption: 'Computer Lab' },
+    { url: '/src/assets/images/plaque.jpeg', caption: 'School Chapel' },
+    { url: 'src/assets/images/staffroom.jpeg', caption: 'Administration Block' },
+    { url: '/src/assets/images/students.jpeg', caption: 'Student Hostels' }
   ];
 
   const timetableData = {
@@ -136,7 +120,9 @@ const SchoolWebsite = () => {
     { date: '2025-03-08', title: 'Parent-Teacher Meeting', type: 'meeting' },
     { date: '2025-03-15', title: 'Mock Exams Begin', type: 'exam' },
     { date: '2025-04-12', title: 'Science Fair', type: 'event' },
-    { date: '2025-05-20', title: 'GCE Examinations', type: 'exam' }
+    { date: '2025-05-20', title: 'GCE Examinations', type: 'exam' },
+    { date: '2025-06-15', title: 'Cultural Day Celebration', type: 'event' },
+    { date: '2025-07-10', title: 'Sports Competition', type: 'sports' }
   ];
 
   useEffect(() => {
@@ -147,11 +133,13 @@ const SchoolWebsite = () => {
   }, []);
 
   const calculateAverage = (subjects) => {
-    const values = Object.values(subjects);
-    return (values.reduce((a, b) => a + b, 0) / values.length).toFixed(1);
+    const values = Object.values(subjects).filter(val => val !== '' && !isNaN(val));
+    if (values.length === 0) return 0;
+    return (values.reduce((a, b) => parseFloat(a) + parseFloat(b), 0) / values.length).toFixed(1);
   };
 
   const getTopPerformers = () => {
+    if (students.length === 0) return [];
     return students
       .map(student => ({
         ...student,
@@ -163,13 +151,40 @@ const SchoolWebsite = () => {
 
   const addStudent = () => {
     if (newStudent.name && newStudent.class) {
-      setStudents([...students, {
+      const studentData = {
         ...newStudent,
         id: students.length + 1,
-        photo: '/api/placeholder/80/80'
-      }]);
-      setNewStudent({ name: '', class: '', subjects: {} });
+        photo: '/api/placeholder/80/80',
+        sequence: 1,
+        dateAdded: new Date().toISOString()
+      };
+      
+      setStudents([...students, studentData]);
+      
+      // Generate shareable link
+      const encodedData = btoa(JSON.stringify(studentData));
+      const link = `${window.location.origin}${window.location.pathname}?student=${encodedData}`;
+      setGeneratedLink(link);
+      
+      setNewStudent({ 
+        name: '', 
+        class: '', 
+        subjects: { Math: '', Physics: '', Chemistry: '', English: '', Biology: '', French: '', Economics: '', Commerce: '', History: '', Literature: '', Geography: '', Logic: '', Religion: '' } 
+      });
     }
+  };
+
+  const deleteStudent = (id) => {
+    setStudents(students.filter(student => student.id !== id));
+  };
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(generatedLink);
+    alert('Link copied to clipboard!');
+  };
+
+  const openLink = () => {
+    window.open(generatedLink, '_blank');
   };
 
   const Navigation = () => (
@@ -278,7 +293,44 @@ const SchoolWebsite = () => {
         >
           <ChevronRight className="h-6 w-6 text-white" />
         </button>
+        
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+          {campusImages.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentSlide(index)}
+              className={`w-3 h-3 rounded-full ${
+                index === currentSlide ? 'bg-white' : 'bg-white bg-opacity-50'
+              }`}
+            />
+          ))}
+        </div>
       </div>
+
+    {/* School Gallery */}
+<div className="bg-white p-6 rounded-lg shadow-lg">
+  <h2 className="text-2xl font-bold mb-6 flex items-center">
+    <Camera className="h-6 w-6 mr-2 text-blue-600" />
+    School Gallery
+  </h2>
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    {campusImages.map((image, index) => (
+      <div key={index} className="group cursor-pointer">
+        <img
+          src={image.url}
+          alt={image.caption}
+          className="w-full h-32 object-cover rounded-lg transition-transform group-hover:scale-105"
+        />
+        <div className="mt-2 text-center">
+          <p className="text-sm font-medium text-black">
+            {image.caption}
+          </p>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -304,6 +356,244 @@ const SchoolWebsite = () => {
         </div>
       </div>
 
+      {/* School News & Events */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold mb-4 flex items-center">
+            <FileText className="h-6 w-6 mr-2 text-green-600" />
+            Latest News
+          </h2>
+          <div className="space-y-4">
+            <div className="border-l-4 border-green-500 pl-4">
+              <h4 className="font-semibold text-green-700">Science Fair Winners Announced</h4>
+              <p className="text-sm text-gray-600">March 1, 2025</p>
+              <p className="text-gray-700 mt-1">Congratulations to all participants in our annual science fair...</p>
+            </div>
+            <div className="border-l-4 border-blue-500 pl-4">
+              <h4 className="font-semibold text-blue-700">New Computer Lab Inaugurated</h4>
+              <p className="text-sm text-gray-600">February 28, 2025</p>
+              <p className="text-gray-700 mt-1">Our state-of-the-art computer lab is now open for students...</p>
+            </div>
+            <div className="border-l-4 border-purple-500 pl-4">
+              <h4 className="font-semibold text-purple-700">Outstanding GCE Results</h4>
+              <p className="text-sm text-gray-600">February 25, 2025</p>
+              <p className="text-gray-700 mt-1">We are proud to announce exceptional performance in 2024 GCE...</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold mb-4 flex items-center">
+            <Calendar className="h-6 w-6 mr-2 text-red-600" />
+            Upcoming Events
+          </h2>
+          <div className="space-y-4">
+            {academicEvents.slice(0, 4).map((event, index) => (
+              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-3 h-3 rounded-full ${
+                    event.type === 'exam' ? 'bg-red-500' : 
+                    event.type === 'meeting' ? 'bg-blue-500' : 'bg-green-500'
+                  }`}></div>
+                  <div>
+                    <h4 className="font-medium">{event.title}</h4>
+                    <p className="text-sm text-gray-600">{event.date}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* School Facilities Showcase */}
+      <div className="bg-white p-6 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold mb-6 flex items-center">
+          <School className="h-6 w-6 mr-2 text-indigo-600" />
+          Our Facilities
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            {
+              title: 'Modern Classrooms',
+              description: '40 well-equipped classrooms with smart boards and modern furniture',
+              image: '/src/assets/images/class.jpeg',
+              icon: BookOpen
+            },
+            {
+              title: 'Science Laboratories',
+              description: 'Fully equipped Physics, Chemistry, and Biology laboratories',
+              image: '/src/assets/images/lap2.jpeg',
+              icon: Award
+            },
+            {
+              title: 'Digital Library',
+              description: 'Over 10,000 books plus digital resources and study spaces',
+              image: '/src/assets/images/clap.jpg',
+              icon: Globe
+            },
+            {
+              title: 'Sports Complex',
+              description: 'Football field, basketball court, volleyball court and gymnasium',
+              image: '/src/assets/images/sport.jpeg',
+              icon: Trophy
+            },
+            {
+              title: 'Computer Laboratory',
+              description: '50 modern computers with high-speed internet connectivity',
+              image: '/src/assets/images/clap.jpg',
+              icon: Settings
+            },
+            {
+              title: 'Student Cafeteria',
+              description: 'Nutritious meals and snacks served in a clean, modern environment',
+              image: '/src/assets/images/cantin.jpeg',
+              icon: Star
+            }
+          ].map((facility, index) => (
+            <div key={index} className="group cursor-pointer">
+              <div className="relative overflow-hidden rounded-lg">
+                <img
+                  src={facility.image}
+                  alt={facility.title}
+                  className="w-full h-48 object-cover transition-transform group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
+                <div className="absolute bottom-4 left-4 text-white">
+                  <facility.icon className="h-6 w-6 mb-2" />
+                  <h3 className="font-bold text-lg">{facility.title}</h3>
+                </div>
+              </div>
+              <div className="mt-3">
+                <p className="text-gray-600 text-sm">{facility.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Principal's Message */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-8 rounded-lg">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div>
+            <h2 className="text-3xl font-bold mb-4">Principal's Message</h2>
+            <p className="text-blue-100 leading-relaxed mb-4">
+              Welcome to Champion Comprehensive High School Makenene, where we believe every student 
+              has the potential to excel. Our dedicated faculty and staff work tirelessly to provide 
+              quality education that prepares our students for successful futures.
+            </p>
+            <div className="flex items-center space-x-3">
+              <img 
+                src="/src/assets/images/WhatsApp Image 2025-08-29 at 1.37.24 PM.jpeg" 
+                alt="Principal" 
+                className="w-15 h-15 rounded-full border-2 border-white"
+              />
+              <div>
+                <p className="font-semibold">Njua Elvis NSOM</p>
+                <p className="text-blue-200 text-sm">School Principal</p>
+              </div>
+            </div>
+          </div>
+          <div className="text-center">
+            <img 
+              src="/src/assets/images/building2.jpeg" 
+              alt="School Building" 
+              className="rounded-lg shadow-lg mx-auto"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Awards & Achievements */}
+      <div className="bg-white p-6 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold mb-6 flex items-center">
+          <Trophy className="h-6 w-6 mr-2 text-yellow-600" />
+          Awards and Achievements
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { year: '2024', award: 'Best Secondary School - Centre Region', emoji: '🏆' },
+            { year: '2023', award: 'Excellence in Science Education', emoji: '🔬' },
+            { year: '2022', award: 'Outstanding Sports Performance', emoji: '⚽' },
+            { year: '2021', award: 'Digital Innovation Award', emoji: '💻' }
+          ].map((achievement, index) => (
+            <div key={index} className="text-center p-4 bg-yellow-50 rounded-lg">
+              <div className="text-4xl mb-2">{achievement.emoji}</div>
+              <h4 className="font-bold text-yellow-800">{achievement.year}</h4>
+              <p className="text-sm text-gray-600">{achievement.award}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Why Choose Us */}
+      <div className="bg-gradient-to-r from-green-600 to-blue-600 text-white p-8 rounded-lg">
+        <h2 className="text-3xl font-bold mb-6 text-center">Why Choose Champion Bilinguals Comprehensive High School?</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            {
+              icon: TrendingUp,
+              title: 'Academic Excellence',
+              description: 'Consistently high GCE pass rates and university admissions'
+            },
+            {
+              icon: Users,
+              title: 'Experienced Faculty',
+              description: 'Qualified teachers with years of educational experience'
+            },
+            {
+              icon: Globe,
+              title: 'Modern Facilities',
+              description: 'State-of-the-art equipment and learning environments'
+            },
+            {
+              icon: Trophy,
+              title: 'Holistic Development',
+              description: 'Sports, arts, and character building programs'
+            },
+            {
+              icon: BookOpen,
+              title: 'Rich Curriculum',
+              description: 'Comprehensive subjects preparing students for future success'
+            },
+            {
+              icon: Award,
+              title: 'Proven Results',
+              description: '25 years of producing successful graduates'
+            }
+          ].map((feature, index) => (
+            <div key={index} className="text-center">
+              <feature.icon className="h-12 w-12 mx-auto mb-3 text-yellow-300" />
+              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+              <p className="text-green-100 text-sm">{feature.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Student Life */}
+      <div className="bg-white p-6 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold mb-6 text-center">Student Life at CBCHS</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[
+            { title: 'Academic Clubs', image: '/src/assets/images/music.jpeg', desc: 'Math, Science, and Debate clubs' },
+            { title: 'Sports Teams', image: '/src/assets/images/sport.jpeg', desc: 'Football, Basketball, Athletics' },
+            { title: 'Cultural Events', image: '/src/assets/images/music.jpeg', desc: 'Music, Drama, and Art festivals' },
+            { title: 'Community Service', image: '/src/assets/images/community.jpeg', desc: 'Giving back to our community' }
+          ].map((activity, index) => (
+            <div key={index} className="text-center group">
+              <img
+                src={activity.image}
+                alt={activity.title}
+                className="w-full h-32 object-cover rounded-lg mb-3 transition-transform group-hover:scale-105"
+              />
+              <h4 className="font-semibold text-gray-800">{activity.title}</h4>
+              <p className="text-sm text-gray-600">{activity.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* About & Contact */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="bg-white p-6 rounded-lg shadow-lg">
@@ -311,11 +601,21 @@ const SchoolWebsite = () => {
             <School className="h-6 w-6 mr-2 text-blue-600" />
             {t.aboutUs}
           </h2>
-          <p className="text-gray-600 leading-relaxed">
-            Champion Bilingual Comprehensive High School Makenene has been a beacon of educational excellence 
+          <p className="text-gray-600 leading-relaxed mb-4">
+            Champion Comprehensive High School Makenene has been a beacon of educational excellence 
             since 2000. We pride ourselves on nurturing young minds with quality education, 
             character development, and preparing students for the challenges of tomorrow.
           </p>
+          <div className="grid grid-cols-2 gap-4 text-center">
+            <div className="bg-blue-50 p-3 rounded">
+              <h4 className="font-bold text-blue-600">Founded</h4>
+              <p className="text-gray-600">2000</p>
+            </div>
+            <div className="bg-green-50 p-3 rounded">
+              <h4 className="font-bold text-green-600">Motto</h4>
+              <p className="text-gray-600 text-sm">Excellence & Character</p>
+            </div>
+          </div>
         </div>
         
         <div className="bg-white p-6 rounded-lg shadow-lg">
@@ -326,15 +626,20 @@ const SchoolWebsite = () => {
           <div className="space-y-3">
             <div className="flex items-center">
               <MapPin className="h-5 w-5 text-gray-500 mr-3" />
-              <span> P.O Box 10, Makenene, Centre Region, Cameroon</span>
+              <span>Makenene, Centre Region, Cameroon</span>
             </div>
             <div className="flex items-center">
               <Phone className="h-5 w-5 text-gray-500 mr-3" />
-              <span>+237 672 774 307 / +237650079756</span>
+              <span>+237 677 123 456</span>
             </div>
             <div className="flex items-center">
               <Mail className="h-5 w-5 text-gray-500 mr-3" />
-              <span>championscbcc@yahoo.com</span>
+              <span>info@cchsmakenene.edu.cm</span>
+            </div>
+            <div className="mt-4 p-3 bg-gray-50 rounded">
+              <h4 className="font-semibold mb-2">Office Hours</h4>
+              <p className="text-sm text-gray-600">Monday - Friday: 7:30 AM - 5:00 PM</p>
+              <p className="text-sm text-gray-600">Saturday: 8:00 AM - 12:00 PM</p>
             </div>
           </div>
         </div>
@@ -357,79 +662,252 @@ const SchoolWebsite = () => {
 
       {/* Add Student Form */}
       <div className="bg-white p-6 rounded-lg shadow-lg">
-        <h3 className="text-xl font-semibold mb-4">Add New Student</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <input
-            type="text"
-            placeholder="Student Name"
-            value={newStudent.name}
-            onChange={(e) => setNewStudent({...newStudent, name: e.target.value})}
-            className="border border-gray-300 rounded px-3 py-2"
-          />
-          <input
-            type="text"
-            placeholder="Class (e.g., Form 5A)"
-            value={newStudent.class}
-            onChange={(e) => setNewStudent({...newStudent, class: e.target.value})}
-            className="border border-gray-300 rounded px-3 py-2"
-          />
+        <h3 className="text-xl font-semibold mb-4">Add New Student Record</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <input
+              type="text"
+              placeholder="Student Full Name"
+              value={newStudent.name}
+              onChange={(e) => setNewStudent({...newStudent, name: e.target.value})}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-500 focus:outline-none"
+            />
+            <input
+              type="text"
+              placeholder="Class (e.g., Form 5A, Form 4B, Upper Sixth, Lower Sixth, Form 1, Form 2)"
+              value={newStudent.class}
+              onChange={(e) => setNewStudent({...newStudent, class: e.target.value})}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-500 focus:outline-none"
+            />
+          </div>
+          
+          <div className="space-y-4">
+            <h4 className="font-semibold text-gray-700">Subject Marks (out of 20)</h4>
+            <div className="grid grid-cols-2 gap-3">
+              {Object.keys(newStudent.subjects).map(subject => (
+                <input
+                  key={subject}
+                  type="number"
+                  placeholder={`${subject} mark`}
+                  min="0"
+                  max="20"
+                  value={newStudent.subjects[subject]}
+                  onChange={(e) => setNewStudent({
+                    ...newStudent,
+                    subjects: {
+                      ...newStudent.subjects,
+                      [subject]: e.target.value
+                    }
+                  })}
+                  className="border border-gray-300 rounded px-3 py-2 focus:border-blue-500 focus:outline-none"
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+        
+        <div className="mt-6 flex justify-center">
           <button
             onClick={addStudent}
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center justify-center space-x-2"
+            className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 flex items-center space-x-2 font-medium"
           >
-            <Plus className="h-4 w-4" />
-            <span>Add Student</span>
+            <Plus className="h-5 w-5" />
+            <span>Add Student & Generate Link</span>
           </button>
         </div>
+
+        {/* Generated Link Display */}
+        {generatedLink && (
+          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <h4 className="font-semibold text-blue-800 mb-2">Student Profile Link Generated!</h4>
+            <div className="flex items-center space-x-2">
+              <a
+                href={generatedLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 border border-blue-300 rounded px-3 py-2 text-sm bg-white text-blue-600 hover:text-blue-800 hover:underline truncate"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {generatedLink}
+              </a>
+              <button
+                onClick={copyLink}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center space-x-1"
+              >
+                <Download className="h-4 w-4" />
+                <span>Copy</span>
+              </button>
+              <button
+                onClick={openLink}
+                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center space-x-1"
+              >
+                <ExternalLink className="h-4 w-4" />
+                <span>Open</span>
+              </button>
+            </div>
+            <p className="text-xs text-blue-600 mt-2">
+              Click the link to view the student profile or copy it to share with parents or administrators.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Students List */}
       <div className="bg-white p-6 rounded-lg shadow-lg">
-        <h3 className="text-xl font-semibold mb-4">Student Records</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                <th className="border p-3 text-left">Photo</th>
-                <th className="border p-3 text-left">Name</th>
-                <th className="border p-3 text-left">Class</th>
-                <th className="border p-3 text-left">Average</th>
-                <th className="border p-3 text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {students.map(student => (
-                <tr key={student.id} className="hover:bg-gray-50">
-                  <td className="border p-3">
-                    <img src={student.photo} alt={student.name} className="w-10 h-10 rounded-full" />
-                  </td>
-                  <td className="border p-3 font-medium">{student.name}</td>
-                  <td className="border p-3">{student.class}</td>
-                  <td className="border p-3">
-                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                      {calculateAverage(student.subjects)}/20
-                    </span>
-                  </td>
-                  <td className="border p-3">
-                    <div className="flex space-x-2">
-                      <button className="text-blue-600 hover:text-blue-800">
-                        <Eye className="h-4 w-4" />
-                      </button>
-                      <button className="text-green-600 hover:text-green-800">
-                        <Edit3 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-semibold">Student Records</h3>
+          <div className="flex items-center space-x-2 text-sm text-gray-600">
+            <Users className="h-4 w-4" />
+            <span>{students.length} students registered</span>
+          </div>
         </div>
+        
+        {students.length === 0 ? (
+          <div className="text-center py-12">
+            <Users className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+            <h4 className="text-xl font-semibold text-gray-500 mb-2">No Students Added Yet</h4>
+            <p className="text-gray-400 mb-6">Start by adding your first student record above.</p>
+            <div className="bg-gray-50 p-6 rounded-lg max-w-md mx-auto">
+              <h5 className="font-semibold text-gray-700 mb-3">How it works:</h5>
+              <div className="space-y-2 text-sm text-gray-600">
+                <div className="flex items-center space-x-2">
+                  <div className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold">1</div>
+                  <span>Enter student name and class</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold">2</div>
+                  <span>Add marks for each subject</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold">3</div>
+                  <span>Get shareable student profile link</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="border border-gray-200 p-3 text-left">Photo</th>
+                  <th className="border border-gray-200 p-3 text-left">Name</th>
+                  <th className="border border-gray-200 p-3 text-left">Class</th>
+                  <th className="border border-gray-200 p-3 text-left">Average</th>
+                  <th className="border border-gray-200 p-3 text-left">Subjects</th>
+                  <th className="border border-gray-200 p-3 text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {students.map(student => (
+                  <tr key={student.id} className="hover:bg-gray-50">
+                    <td className="border border-gray-200 p-3">
+                      <img src={student.photo} alt={student.name} className="w-12 h-12 rounded-full" />
+                    </td>
+                    <td className="border border-gray-200 p-3 font-medium">{student.name}</td>
+                    <td className="border border-gray-200 p-3">{student.class}</td>
+                    <td className="border border-gray-200 p-3">
+                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded font-bold">
+                        {calculateAverage(student.subjects)}/20
+                      </span>
+                    </td>
+                    <td className="border border-gray-200 p-3">
+                      <div className="space-y-1 text-xs">
+                        {Object.entries(student.subjects).map(([subject, mark]) => (
+                          <div key={subject} className="flex justify-between">
+                            <span className="text-gray-600">{subject}:</span>
+                            <span className="font-medium">{mark}/20</span>
+                          </div>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="border border-gray-200 p-3">
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => {
+                            const encodedData = btoa(JSON.stringify(student));
+                            const link = `${window.location.origin}${window.location.pathname}?student=${encodedData}`;
+                            setGeneratedLink(link);
+                          }}
+                          className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-100"
+                          title="Generate Link"
+                        >
+                          <Globe className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => deleteStudent(student.id)}
+                          className="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-100"
+                          title="Delete Student"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Generated Link Display for existing students */}
+        {generatedLink && students.length > 0 && (
+          <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <h4 className="font-semibold text-green-800 mb-2 flex items-center">
+              <Globe className="h-4 w-4 mr-2" />
+              Student Profile Link Ready!
+            </h4>
+            <div className="flex items-center space-x-2">
+              <a
+                href={generatedLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 border border-green-300 rounded px-3 py-2 text-sm bg-white text-green-600 hover:text-green-800 hover:underline truncate"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {generatedLink}
+              </a>
+              <button
+                onClick={copyLink}
+                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center space-x-1"
+              >
+                <Download className="h-4 w-4" />
+                <span>Copy</span>
+              </button>
+              <button
+                onClick={openLink}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center space-x-1"
+              >
+                <ExternalLink className="h-4 w-4" />
+                <span>Open</span>
+              </button>
+            </div>
+            <p className="text-xs text-green-600 mt-2">
+              Link generated successfully! Click to view or share with parents or guardians.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
 
   const TopPerformersSection = () => {
+    if (students.length === 0) {
+      return (
+        <div className="space-y-6">
+          <h2 className="text-3xl font-bold flex items-center">
+            <Trophy className="h-8 w-8 text-yellow-500 mr-3" />
+            {t.topPerformers}
+          </h2>
+          <div className="text-center py-12 bg-white rounded-lg shadow-lg">
+            <Trophy className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-500 mb-2">No Performance Data Yet</h3>
+            <p className="text-gray-400">Add students in the Teacher Dashboard to see top performers here.</p>
+          </div>
+        </div>
+      );
+    }
+
     const topPerformers = getTopPerformers();
     
     return (
@@ -585,7 +1063,7 @@ const SchoolWebsite = () => {
           <p className="text-gray-600 mb-4">Access previous GCE examination papers and practice questions.</p>
           <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center space-x-2">
             <Download className="h-4 w-4" />
-            <a href="https://estudyuniverse.com/gce-revision-past-papers-for-ordinary-and-advanced-level/">Download</a>
+           <a href="https://estudyuniverse.com/gce-revision-past-papers-for-ordinary-and-advanced-level/"> <span>Download</span></a>
           </button>
         </div>
         
@@ -712,150 +1190,11 @@ const SchoolWebsite = () => {
                 <p className="text-gray-500 text-center">No feedback yet. Be the first to share your thoughts!</p>
               )}
             </div>
-          </div>
+            </div>
         </div>
       </div>
     );
   };
-
-  const VirtualTourSection = () => (
-    <div className="space-y-6">
-      <h2 className="text-3xl font-bold flex items-center">
-        <Camera className="h-8 w-8 text-indigo-500 mr-3" />
-        {t.virtualTour}
-      </h2>
-      
-      <div className="bg-white p-6 rounded-lg shadow-lg">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {campusImages.map((image, index) => (
-            <div key={index} className="relative group cursor-pointer">
-              <img
-                src={image.url}
-                alt={image.caption}
-                className="w-full h-64 object-cover rounded-lg transition-transform group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-opacity rounded-lg flex items-center justify-center">
-                <div className="text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Camera className="h-8 w-8 mx-auto mb-2" />
-                  <p className="text-center font-medium">{image.caption}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      
-      <div className="bg-white p-6 rounded-lg shadow-lg">
-        <h3 className="text-xl font-semibold mb-4">Campus Facilities</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[
-            { name: 'Modern Classrooms', desc: '40 well-equipped classrooms with smart boards' },
-            { name: 'Science Laboratories', desc: 'Physics, Chemistry, and Biology labs' },
-            { name: 'Computer Lab', desc: '50 computers with internet access' },
-            { name: 'Library', desc: 'Over 10,000 books and digital resources' },
-            { name: 'Sports Complex', desc: 'Football field, basketball court, and gym' },
-            { name: 'Cafeteria', desc: 'Nutritious meals and snacks for students' }
-          ].map((facility, index) => (
-            <div key={index} className="p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-semibold text-indigo-600 mb-2">{facility.name}</h4>
-              <p className="text-sm text-gray-600">{facility.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
-  const GCEResultsSection = () => (
-    <div className="space-y-6">
-      <h2 className="text-3xl font-bold flex items-center">
-        <Award className="h-8 w-8 text-yellow-500 mr-3" />
-        {t.gceResults}
-      </h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h3 className="text-xl font-semibold mb-4">GCE O-Level Results 2024</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center p-3 bg-green-50 rounded">
-              <span>Overall Pass Rate</span>
-              <span className="font-bold text-green-600">95.2%</span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-blue-50 rounded">
-              <span>Grade A Students</span>
-              <span className="font-bold text-blue-600">45%</span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-purple-50 rounded">
-              <span>Total Candidates</span>
-              <span className="font-bold text-purple-600">248</span>
-            </div>
-          </div>
-          <button className="mt-4 w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center justify-center space-x-2">
-            <Download className="h-4 w-4" />
-            <span>Download Full Results</span>
-          </button>
-        </div>
-        
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h3 className="text-xl font-semibold mb-4">GCE A-Level Results 2024</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center p-3 bg-green-50 rounded">
-              <span>Overall Pass Rate</span>
-              <span className="font-bold text-green-600">88.7%</span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-blue-50 rounded">
-              <span>Grade A Students</span>
-              <span className="font-bold text-blue-600">32%</span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-purple-50 rounded">
-              <span>Total Candidates</span>
-              <span className="font-bold text-purple-600">156</span>
-            </div>
-          </div>
-          <button className="mt-4 w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center justify-center space-x-2">
-            <Download className="h-4 w-4" />
-            <span>Download Full Results</span>
-          </button>
-        </div>
-      </div>
-      
-      <div className="bg-white p-6 rounded-lg shadow-lg">
-        <h3 className="text-xl font-semibold mb-4">Historical Performance</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-gray-50">
-                <th className="border p-3 text-left">Year</th>
-                <th className="border p-3 text-left">O-Level Pass Rate</th>
-                <th className="border p-3 text-left">A-Level Pass Rate</th>
-                <th className="border p-3 text-left">Best Student</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="hover:bg-gray-50">
-                <td className="border p-3">2024</td>
-                <td className="border p-3">95.2%</td>
-                <td className="border p-3">88.7%</td>
-                <td className="border p-3">Marie Claire Foka</td>
-              </tr>
-              <tr className="hover:bg-gray-50">
-                <td className="border p-3">2023</td>
-                <td className="border p-3">93.8%</td>
-                <td className="border p-3">86.2%</td>
-                <td className="border p-3">Paul Mbarga</td>
-              </tr>
-              <tr className="hover:bg-gray-50">
-                <td className="border p-3">2022</td>
-                <td className="border p-3">91.5%</td>
-                <td className="border p-3">84.3%</td>
-                <td className="border p-3">Jean Baptiste Nkomo</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
 
   const renderSection = () => {
     switch (activeSection) {
@@ -867,8 +1206,6 @@ const SchoolWebsite = () => {
       case 'resources': return <StudyResourcesSection />;
       case 'calendar': return <CalendarSection />;
       case 'feedback': return <FeedbackSection />;
-      case 'tour': return <VirtualTourSection />;
-      case 'gce': return <GCEResultsSection />;
       default: return <HomeSection />;
     }
   };
@@ -877,47 +1214,54 @@ const SchoolWebsite = () => {
     <div className="min-h-screen bg-gray-100">
       <Navigation />
       
-      {/* Mobile Menu Overlay */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden" onClick={() => setMobileMenuOpen(false)}>
-          <div className="bg-white w-64 h-full p-4" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-bold text-lg">Menu</h3>
-              <button onClick={() => setMobileMenuOpen(false)}>
-                <X className="h-6 w-6" />
-              </button>
-            </div>
-            <div className="space-y-2">
-              {[
-                { id: 'home', icon: User, label: t.home },
-                { id: 'teacher', icon: Users, label: t.teacherDashboard },
-                { id: 'timetable', icon: Clock, label: t.timetable },
-                { id: 'performers', icon: Trophy, label: t.topPerformers },
-                { id: 'performance', icon: BarChart3, label: t.performance },
-                { id: 'tour', icon: Camera, label: t.virtualTour },
-                { id: 'gce', icon: Award, label: t.gceResults },
-                { id: 'resources', icon: BookOpen, label: t.studyResources },
-                { id: 'calendar', icon: Calendar, label: t.calendar },
-                { id: 'feedback', icon: MessageSquare, label: t.feedback }
-              ].map(item => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    setActiveSection(item.id);
-                    setMobileMenuOpen(false);
-                  }}
-                  className={`w-full text-left flex items-center space-x-2 px-3 py-2 rounded transition-colors ${
-                    activeSection === item.id ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100'
-                  }`}
-                >
-                  <item.icon className="h-4 w-4" />
-                  <span>{item.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+{/* Mobile Menu Overlay */}
+{mobileMenuOpen && (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+    onClick={() => setMobileMenuOpen(false)}
+  >
+    <div
+      className="bg-white w-64 h-full p-4"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="font-bold text-lg">Menu</h3>
+        <button onClick={() => setMobileMenuOpen(false)}>
+          <X className="h-6 w-6" />
+        </button>
+      </div>
+      <div className="space-y-2">
+        {[
+          { id: 'home', icon: User, label: t.home },
+          { id: 'teacher', icon: Users, label: t.teacherDashboard },
+          { id: 'timetable', icon: Clock, label: t.timetable },
+          { id: 'performers', icon: Trophy, label: t.topPerformers },
+          { id: 'performance', icon: BarChart3, label: t.performance },
+          { id: 'resources', icon: BookOpen, label: t.studyResources },
+          { id: 'calendar', icon: Calendar, label: t.calendar },
+          { id: 'feedback', icon: MessageSquare, label: t.feedback }
+        ].map((item) => (
+          <button
+            key={item.id}
+            onClick={() => {
+              setActiveSection(item.id);
+              setMobileMenuOpen(false);
+            }}
+            className={`w-full text-left flex items-center space-x-2 px-3 py-2 rounded transition-colors ${
+              activeSection === item.id
+                ? 'bg-blue-100 text-blue-600'
+                : 'hover:bg-gray-100'
+            }`}
+          >
+            <item.icon className="h-4 w-4" />
+            <span>{item.label}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
+
       
       <main className="container mx-auto px-4 py-8">
         {renderSection()}
@@ -930,7 +1274,7 @@ const SchoolWebsite = () => {
             <div>
               <div className="flex items-center space-x-2 mb-4">
                 <School className="h-6 w-6" />
-                <span className="font-bold">CBCHS / COLPOBIC Makenene</span>
+                <span className="font-bold">CBCHS Makenene / COLPOBIC</span>
               </div>
               <p className="text-blue-200">
                 Excellence in Education, Character in Leadership
@@ -941,15 +1285,14 @@ const SchoolWebsite = () => {
               <div className="space-y-2 text-blue-200">
                 <p className="cursor-pointer hover:text-white" onClick={() => setActiveSection('home')}>Home</p>
                 <p className="cursor-pointer hover:text-white" onClick={() => setActiveSection('performers')}>Top Performers</p>
-                <p className="cursor-pointer hover:text-white" onClick={() => setActiveSection('gce')}>GCE Results</p>
                 <p className="cursor-pointer hover:text-white" onClick={() => setActiveSection('resources')}>Resources</p>
               </div>
             </div>
             <div>
               <h4 className="font-semibold mb-3">Contact Info</h4>
               <div className="space-y-2 text-blue-200">
-                <p className="flex items-center"><MapPin className="h-4 w-4 mr-2" /> P.O Box 10, Makenene, Centre</p>
-                <p className="flex items-center"><Phone className="h-4 w-4 mr-2" /> +237 650079756 / +237672774307</p>
+                <p className="flex items-center"><MapPin className="h-4 w-4 mr-2" /> P.O Box 10, Makenene, Centre Region, Cameroon</p>
+                <p className="flex items-center"><Phone className="h-4 w-4 mr-2" /> +237 672 774 307 / +237650079756</p>
                 <p className="flex items-center"><Mail className="h-4 w-4 mr-2" /> championscbcc@yahoo.com</p>
               </div>
             </div>

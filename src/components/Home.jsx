@@ -96,14 +96,14 @@ const SchoolWebsite = () => {
   const t = translations[language];
 
   const campusImages = [
-    { url: './public/images/building1.jpeg', caption: 'Main School Building' },
-    { url: './public/images/lap1.jpeg', caption: 'Science Laboratory' },
-    { url: './public/images/liabrary.jpeg', caption: 'Library and Study Hall' },
-    { url: './public/images/sport.jpeg', caption: 'Sports Complex' },
-    { url: './public/images/lap2.jpeg', caption: 'Computer Lab' },
-    { url: './public/images/plaque.jpeg', caption: 'School Chapel' },
-    { url: './public/images/staffroom.jpeg', caption: 'Administration Block' },
-    { url: './public/images/students.jpeg', caption: 'Student Hostels' }
+    { url: '/images/building1.jpeg', caption: 'Main School Building' },
+    { url: '/images/lap1.jpeg', caption: 'Science Laboratory' },
+    { url: '/images/liabrary.jpeg', caption: 'Library and Study Hall' },
+    { url: '/images/sport.jpeg', caption: 'Sports Complex' },
+    { url: '/images/lap2.jpeg', caption: 'Computer Lab' },
+    { url: '/images/plaque.jpeg', caption: 'School Chapel' },
+    { url: '/images/staffroom.jpeg', caption: 'Administration Block' },
+    { url: '/images/students.jpeg', caption: 'Student Hostels' }
   ];
   
 

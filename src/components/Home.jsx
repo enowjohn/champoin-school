@@ -429,7 +429,7 @@ const SchoolWebsite = () => {
             {
               title: 'Digital Library',
               description: 'Over 10,000 books plus digital resources and study spaces',
-              image: '/src/assets/images/clap.jpg',
+              image: '/src/assets/images/digitallibrary.png',
               icon: Globe
             },
             {

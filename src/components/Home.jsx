@@ -96,14 +96,14 @@ const SchoolWebsite = () => {
   const t = translations[language];
 
   const campusImages = [
-    { url: '../src/assets/images/building1.jpeg', caption: 'Main School Building' },
-    { url: '../src/assets/images/lap1.jpeg', caption: 'Science Laboratory' },
-    { url: '../src/assets/images/liabrary.jpeg', caption: 'Library and Study Hall' },
-    { url: '../src/assets/images/sport.jpeg', caption: 'Sports Complex' },
-    { url: '../src/assets/images/lap2.jpeg', caption: 'Computer Lab' },
-    { url: '../src/assets/images/plaque.jpeg', caption: 'School Chapel' },
-    { url: '../src/assets/images/staffroom.jpeg', caption: 'Administration Block' },
-    { url: '../src/assets/images/students.jpeg', caption: 'Student Hostels' }
+    { url: '/public/images/building1.jpeg', caption: 'Main School Building' },
+    { url: '../public/images/lap1.jpeg', caption: 'Science Laboratory' },
+    { url: '../public/images/liabrary.jpeg', caption: 'Library and Study Hall' },
+    { url: '../public/images/sport.jpeg', caption: 'Sports Complex' },
+    { url: '../public/images/lap2.jpeg', caption: 'Computer Lab' },
+    { url: '../public/images/plaque.jpeg', caption: 'School Chapel' },
+    { url: '../public/images/staffroom.jpeg', caption: 'Administration Block' },
+    { url: '../public/images/students.jpeg', caption: 'Student Hostels' }
   ];
 
   const timetableData = {
@@ -417,37 +417,37 @@ const SchoolWebsite = () => {
             {
               title: 'Modern Classrooms',
               description: '40 well-equipped classrooms with smart boards and modern furniture',
-              image: '../src/assets/images/class.jpeg',
+              image: '../public/images/class.jpeg',
               icon: BookOpen
             },
             {
               title: 'Science Laboratories',
               description: 'Fully equipped Physics, Chemistry, and Biology laboratories',
-              image: '../src/assets/images/lap2.jpeg',
+              image: '../public/images/lap2.jpeg',
               icon: Award
             },
             {
               title: 'Digital Library',
               description: 'Over 10,000 books plus digital resources and study spaces',
-              image: '../src/assets/images/digitallibrary.png',
+              image: '../public/images/digitallibrary.png',
               icon: Globe
             },
             {
               title: 'Sports Complex',
               description: 'Football field, basketball court, volleyball court and gymnasium',
-              image: '../src/assets/images/sport.jpeg',
+              image: '../public/images/sport.jpeg',
               icon: Trophy
             },
             {
               title: 'Computer Laboratory',
               description: '50 modern computers with high-speed internet connectivity',
-              image: '../src/assets/images/clap.jpg',
+              image: '../public/images/clap.jpg',
               icon: Settings
             },
             {
               title: 'Student Cafeteria',
               description: 'Nutritious meals and snacks served in a clean, modern environment',
-              image: '../src/assets/images/cantin.jpeg',
+              image: '../public/images/cantin.jpeg',
               icon: Star
             }
           ].map((facility, index) => (
@@ -484,7 +484,7 @@ const SchoolWebsite = () => {
             </p>
             <div className="flex items-center space-x-3">
               <img 
-                src="../src/assets/images/WhatsApp Image 2025-08-29 at 1.37.24 PM.jpeg" 
+                src="../public/images/WhatsApp Image 2025-08-29 at 1.37.24 PM.jpeg" 
                 alt="Principal" 
                 className="w-15 h-15 rounded-full border-2 border-white"
               />
@@ -496,7 +496,7 @@ const SchoolWebsite = () => {
           </div>
           <div className="text-center">
             <img 
-              src="../src/assets/images/building2.jpeg" 
+              src="../public/images/building2.jpeg" 
               alt="School Building" 
               className="rounded-lg shadow-lg mx-auto"
             />
@@ -576,10 +576,10 @@ const SchoolWebsite = () => {
         <h2 className="text-2xl font-bold mb-6 text-center">Student Life at CBCHS</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { title: 'Academic Clubs', image: '/src/assets/images/music.jpeg', desc: 'Math, Science, and Debate clubs' },
-            { title: 'Sports Teams', image: '/src/assets/images/sport.jpeg', desc: 'Football, Basketball, Athletics' },
-            { title: 'Cultural Events', image: '/src/assets/images/music.jpeg', desc: 'Music, Drama, and Art festivals' },
-            { title: 'Community Service', image: '/src/assets/images/community.jpeg', desc: 'Giving back to our community' }
+            { title: 'Academic Clubs', image: '../public/images/music.jpeg', desc: 'Math, Science, and Debate clubs' },
+            { title: 'Sports Teams', image: '../public/images/sport.jpeg', desc: 'Football, Basketball, Athletics' },
+            { title: 'Cultural Events', image: '../public/images/music.jpeg', desc: 'Music, Drama, and Art festivals' },
+            { title: 'Community Service', image: '../public/images/community.jpeg', desc: 'Giving back to our community' }
           ].map((activity, index) => (
             <div key={index} className="text-center group">
               <img
